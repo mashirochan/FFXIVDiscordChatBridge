@@ -1,0 +1,287 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net8.0-windows7.0": {
+      "DalamudPackager": {
+        "type": "Direct",
+        "requested": "[2.1.13, )",
+        "resolved": "2.1.13",
+        "contentHash": "rMN1omGe8536f4xLMvx9NwfvpAc9YFFfeXJ1t4P4PE6Gu8WCIoFliR1sh07hM+bfODmesk/dvMbji7vNI+B/pQ=="
+      },
+      "Discord.Net": {
+        "type": "Direct",
+        "requested": "[3.15.3, )",
+        "resolved": "3.15.3",
+        "contentHash": "qXnqM8Hh2/FH44zz8P2cte5ti63CTLdwDaU3WB+S24m9yQ27mjHSDYb8jlSJbK/RMCNmCOyRFA57uTwaKk73jQ==",
+        "dependencies": {
+          "Discord.Net.Commands": "3.15.3",
+          "Discord.Net.Core": "3.15.3",
+          "Discord.Net.Interactions": "3.15.3",
+          "Discord.Net.Rest": "3.15.3",
+          "Discord.Net.WebSocket": "3.15.3",
+          "Discord.Net.Webhook": "3.15.3"
+        }
+      },
+      "Google.Cloud.TextToSpeech.V1": {
+        "type": "Direct",
+        "requested": "[3.6.0, )",
+        "resolved": "3.6.0",
+        "contentHash": "O6Pt34Bi2UUHGK9JTruVo8AG0WbSMuczrBkslVhWG9iotRxwbJNfQD6Go57d2t9J7m/97ZrDes8Aevm+JaYQ9A==",
+        "dependencies": {
+          "Google.Api.Gax.Grpc": "[4.8.0, 5.0.0)",
+          "Google.LongRunning": "[3.2.0, 4.0.0)"
+        }
+      },
+      "OpusDotNet.opus.win-x64": {
+        "type": "Direct",
+        "requested": "[1.3.1, )",
+        "resolved": "1.3.1",
+        "contentHash": "sf6Ar70AFaA+m/70VMGHFXKJnOCMGJWILCACbngea90BL2SrVe5QxLpfuYEw45lmPUBRWbPv994sXutV180HTw=="
+      },
+      "Sodium.Core": {
+        "type": "Direct",
+        "requested": "[1.4.0-preview.1, )",
+        "resolved": "1.4.0-preview.1",
+        "contentHash": "xNONtcoXrzjyMR+ka7wF/OLSAEAsdVPTKDeqWD/PKKlyeebzExJR2POpWIyjpknq+qHlrGY0e3gBvjtoDOiBxw==",
+        "dependencies": {
+          "libsodium": "[1.0.19.2, 1.0.20)"
+        }
+      },
+      "Discord.Net.Commands": {
+        "type": "Transitive",
+        "resolved": "3.15.3",
+        "contentHash": "g3OFzjWx7xxl+EXm7UmqQWM2RKOlTWEhadwc89B1SyYjbN72U9pU8pXvZbZLe29Psqd2k5neFVc25GwiCBjbmQ==",
+        "dependencies": {
+          "Discord.Net.Core": "3.15.3"
+        }
+      },
+      "Discord.Net.Core": {
+        "type": "Transitive",
+        "resolved": "3.15.3",
+        "contentHash": "FvOEC1Buam9C+aJ5CaLb5FEPKVdXjaNrEmgexo02n9bSRILQNi8iBM6f3K/Ziq2SLEZn+tujEHwNH8zFMzZwVA==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3",
+          "System.Collections.Immutable": "6.0.0",
+          "System.Interactive.Async": "6.0.1",
+          "System.ValueTuple": "4.5.0"
+        }
+      },
+      "Discord.Net.Interactions": {
+        "type": "Transitive",
+        "resolved": "3.15.3",
+        "contentHash": "Bo8nX2Ho0sypNCPJ6jb/Bvx7LlVZc3bN70Fq31q5uWjK+DSKTIPsSOacPuxGCHAeq7VZCPbEqaGLb8EZ+YnmHw==",
+        "dependencies": {
+          "Discord.Net.Core": "3.15.3",
+          "Discord.Net.Rest": "3.15.3",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0",
+          "System.Collections.Immutable": "6.0.0",
+          "System.Reactive": "6.0.0"
+        }
+      },
+      "Discord.Net.Rest": {
+        "type": "Transitive",
+        "resolved": "3.15.3",
+        "contentHash": "sMfO42ZqzRHmVSEgbAG+FbkeKDorvfksH+1D0ds8hG1IWhK3mzZIeE8FkVLRputRxcAnP5eHbiBOhtgbN4hRMA==",
+        "dependencies": {
+          "Discord.Net.Core": "3.15.3"
+        }
+      },
+      "Discord.Net.Webhook": {
+        "type": "Transitive",
+        "resolved": "3.15.3",
+        "contentHash": "69dvN5L0aKyATSET3lFemQd2ZyYBAxr9kde4PPhpiyx58N/AKsBQRqeBQE9PUIuIdEcFwllmgorHaVTBKLw6lw==",
+        "dependencies": {
+          "Discord.Net.Core": "3.15.3",
+          "Discord.Net.Rest": "3.15.3"
+        }
+      },
+      "Discord.Net.WebSocket": {
+        "type": "Transitive",
+        "resolved": "3.15.3",
+        "contentHash": "sR7Apa1I0IgpDG4TgJZ6Amd35FQIzbpN+W6+1XpnXOo58KcrSM3v1hODrKr/wkYHtm1zpeBqBbKfZCvLIsdRww==",
+        "dependencies": {
+          "Discord.Net.Core": "3.15.3",
+          "Discord.Net.Rest": "3.15.3"
+        }
+      },
+      "Google.Api.CommonProtos": {
+        "type": "Transitive",
+        "resolved": "2.15.0",
+        "contentHash": "k+43CTEgMbT4C2JjcIJon3GvMNFJ3kLMjPTedOkXUAt0D5cFfrlee+M4oieueAVhbXktR89yoj5O/kVmC/AKJw==",
+        "dependencies": {
+          "Google.Protobuf": "[3.25.0, 4.0.0)"
+        }
+      },
+      "Google.Api.Gax": {
+        "type": "Transitive",
+        "resolved": "4.8.0",
+        "contentHash": "xlV8Jq/G5CQAA3PwYAuKGjfzGOP7AvjhREnE6vgZlzxREGYchHudZWa2PWSqFJL+MBtz9YgitLpRogANN3CVvg==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "Google.Api.Gax.Grpc": {
+        "type": "Transitive",
+        "resolved": "4.8.0",
+        "contentHash": "njcDsrFMZTmG2xdar6o5zyj7YVCUv6JNWU7un+q15Fm9DpGt0HSqHVnabVD2LBjUa3JWrqWX2kVv0w7qx4+tFQ==",
+        "dependencies": {
+          "Google.Api.CommonProtos": "2.15.0",
+          "Google.Api.Gax": "4.8.0",
+          "Google.Apis.Auth": "[1.67.0, 2.0.0)",
+          "Grpc.Auth": "[2.60.0, 3.0.0)",
+          "Grpc.Core.Api": "[2.60.0, 3.0.0)",
+          "Grpc.Net.Client": "[2.60.0, 3.0.0)",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0"
+        }
+      },
+      "Google.Apis": {
+        "type": "Transitive",
+        "resolved": "1.67.0",
+        "contentHash": "XM8/fViJaB1pN61OdXy5RMZoQEqd3hKlWvA/K431gFSb5XtQ48BynfgrbBkUtFcPbSRa4BdjBHzSbkBh/skyMg==",
+        "dependencies": {
+          "Google.Apis.Core": "1.67.0"
+        }
+      },
+      "Google.Apis.Auth": {
+        "type": "Transitive",
+        "resolved": "1.67.0",
+        "contentHash": "Bs9BlbZ12Y4NXzMONjpzQhZr9VbwLUTGMHkcQRF36aYnk2fYrmj5HNVNh7PPHDDq1fcEQpCtPic2nSlpYQLKXw==",
+        "dependencies": {
+          "Google.Apis": "1.67.0",
+          "Google.Apis.Core": "1.67.0",
+          "System.Management": "7.0.2"
+        }
+      },
+      "Google.Apis.Core": {
+        "type": "Transitive",
+        "resolved": "1.67.0",
+        "contentHash": "IPq0I3B01NYZraPoMl8muELFLg4Vr2sbfyZp4PR2Xe3MAhHkZCiKyV28Yh1L14zIKUb0X0snol1sR5/mx4S6Iw==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "Google.LongRunning": {
+        "type": "Transitive",
+        "resolved": "3.2.0",
+        "contentHash": "aL3xbATOZCD5i8iNR1pYw/w3jEb8ndRUa6HAKCnNsEtu0FzpdqG4BvezWvJUM4kUIMjSGGBChOmnCLkjioBGrw==",
+        "dependencies": {
+          "Google.Api.Gax.Grpc": "[4.8.0, 5.0.0)"
+        }
+      },
+      "Google.Protobuf": {
+        "type": "Transitive",
+        "resolved": "3.25.0",
+        "contentHash": "pIEkH1IqZV1iK8J5MYdG1kOyY0EoQLB6yEKvBq12RYNtvGXwCvnQg5zQsFmcqAEPtIZvSqPozIbUZaEd5a2gCg=="
+      },
+      "Grpc.Auth": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "mJAllsSsFix/wrp1l5QmHXRlzMFmnIGZJYuHG1thkDJPUE9ltHPkdL5x30xGpqKvka02Il2oHd66gt8YfSOIWg==",
+        "dependencies": {
+          "Google.Apis.Auth": "1.46.0",
+          "Grpc.Core.Api": "2.60.0"
+        }
+      },
+      "Grpc.Core.Api": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "VWah+8dGJhhsay5BQ/Ljq6GYDWj0lSjdzqyoBgUQhXTbBqhs+q5dRFROKxI1xxzlL4pfUO45cf/y+KnHVFG9ew=="
+      },
+      "Grpc.Net.Client": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "J9U96gjZHOcqSgAThg9vZZhLsbTD005bUggPtMP/RVQnGc3+tQJTpkRUCJtJWq9cykNydsRVoyU38TjPP/VJ4A==",
+        "dependencies": {
+          "Grpc.Net.Common": "2.60.0",
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
+        }
+      },
+      "Grpc.Net.Common": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "Y/917aplgD1RA0q1cd9WpnMGyl9Luu3WZl6ZMpPvNQwg2TNw/3uXUDSriDBybeCtxnKUCtxUcWO3WsVkhM1DcA==",
+        "dependencies": {
+          "Grpc.Core.Api": "2.60.0"
+        }
+      },
+      "libsodium": {
+        "type": "Transitive",
+        "resolved": "1.0.19.2",
+        "contentHash": "Cyu2NWfItRvNlXxg9mvAlSDpSj7yZ7zME0hwowh8C+zad3izWsWDOvm6FGCgPZtO1WZZI0tSvnmleSei5+VqyQ=="
+      },
+      "Microsoft.Bcl.AsyncInterfaces": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "UcSjPsst+DfAdJGVDsu346FX0ci0ah+lw3WRtn18NUwEqRt70HaOQ7lI72vy3+1LxtqI3T5GWwV39rQSrCzAeg=="
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "xlzi2IYREJH3/m6+lUrQlujzX8wDitm4QGnUu6kUXTQAWPuZY8i+ticFJbzfqaetLA6KR/rO6Ew/HuYD+bxifg=="
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "/HggWBbTwy8TgebGSX5DBZ24ndhzi93sHUBDvP1IxbZD7FDokYzdAr6+vbWGjw2XAfR2EJ1sfKUotpjHnFWPxA=="
+      },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
+      "System.CodeDom": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "GLltyqEsE5/3IE+zYRP5sNa1l44qKl9v+bfdMcwg+M9qnQf47wK3H0SUR/T+3N4JEQXF3vV4CSuuo0rsg+nq2A=="
+      },
+      "System.Collections.Immutable": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "l4zZJ1WU2hqpQQHXz1rvC3etVZN+2DLmQMO79FhOTZHMn8tDRr+WU287sbomD0BETlmKDn0ygUgVy9k5xkkJdA==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
+      },
+      "System.Interactive.Async": {
+        "type": "Transitive",
+        "resolved": "6.0.1",
+        "contentHash": "f8H1O4ZWDQo344y5NQU76G4SIjWMuKDVXL9OM1dg6K5YZnLkc8iCdQDybBvMcC6ufk61jzXGVAX6UCDu0qDSjA==",
+        "dependencies": {
+          "System.Linq.Async": "6.0.1"
+        }
+      },
+      "System.Linq.Async": {
+        "type": "Transitive",
+        "resolved": "6.0.1",
+        "contentHash": "0YhHcaroWpQ9UCot3Pizah7ryAzQhNvobLMSxeDIGmnXfkQn8u5owvpOH0K6EVB+z9L7u6Cc4W17Br/+jyttEQ==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "6.0.0"
+        }
+      },
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "7.0.2",
+        "contentHash": "/qEUN91mP/MUQmJnM5y5BdT7ZoPuVrtxnFlbJ8a3kBJGhe2wCzBfnPFtK2wTtEEcf3DMGR9J00GZZfg6HRI6yA==",
+        "dependencies": {
+          "System.CodeDom": "7.0.0"
+        }
+      },
+      "System.Reactive": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "31kfaW4ZupZzPsI5PVe77VhnvFF55qgma7KZr/E0iFTs6fmdhhG8j0mgEx620iLTey1EynOkEfnyTjtNEpJzGw=="
+      },
+      "System.Runtime.CompilerServices.Unsafe": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg=="
+      },
+      "System.ValueTuple": {
+        "type": "Transitive",
+        "resolved": "4.5.0",
+        "contentHash": "okurQJO6NRE/apDIP23ajJ0hpiNmJ+f0BwOlB/cSqTLQlw5upkf+5+96+iG2Jw40G1fCVCyPz/FhIABUjMR+RQ=="
+      }
+    }
+  }
+}

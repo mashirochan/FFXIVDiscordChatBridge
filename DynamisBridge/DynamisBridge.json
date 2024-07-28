@@ -1,0 +1,14 @@
+{
+    "Author": "Fuwa Aika",
+    "Name": "Dynamis Bridge",
+    "Punchline": "Send FFXIV chat messages to a Discord TTS bot.",
+    "Description": "This bridge plugin enables the sending of messages in a specific chat channel from a specific user to a Discord TTS bot to be read aloud in a Discord voice channel.",
+    "ApplicableVersion": "any",
+    "Tags": [
+        "dynamis",
+        "bridge",
+        "discord",
+        "tts",
+        "chat"
+    ]
+}
