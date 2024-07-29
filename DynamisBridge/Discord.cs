@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace DynamisBridge
 {
@@ -178,48 +179,104 @@ namespace DynamisBridge
             isPlaying = false;
         }
 
-        private static async Task PlayAudio(string path)
+        private CancellationTokenSource _disposeToken;
+
+        private async Task PlayAudio(string path)
         {
-            if (AudioClient == null)
+            try
             {
-                Plugin.Logger.Error("AudioClient has not been instantiated yet!");
-                return;
-            }
-
-            Plugin.Logger.Debug($"PlayAudio playing audio: {path}");
-
-            using (var ffmpeg = CreateStream(path))
-            using (var output = ffmpeg.StandardOutput.BaseStream)
-            using (var discord = AudioClient.CreatePCMStream(AudioApplication.Voice))
-            {
-                try
+                _disposeToken = new CancellationTokenSource();
+                bool exit = false;
+                // Create FFmpeg using the previous example
+                using (var ffmpeg = CreateStream(path))
                 {
-                    Plugin.Logger.Debug($"Playing voice message from {path}!");
-
-                    // Run the CopyToAsync operation on a separate task
-                    await Task.Run(async () =>
+                    if (ffmpeg == null)
                     {
-                        await output.CopyToAsync(discord);
-                    });
+                        Plugin.Logger.Debug("FFMPEG null");
+                        return;
+                    }
+                    if (AudioClient == null)
+                    {
+                        Plugin.Logger.Debug("AudioClient null");
+                        return;
+                    }
+                    using (var output = ffmpeg.StandardOutput.BaseStream)
+                    using (var discord = AudioClient.CreatePCMStream(AudioApplication.Mixed, 1920))
+                    {
+                        //try 
+                        //{
+                        //    await output.CopyToAsync(discord); 
+                        //}
+                        //finally 
+                        //{ 
+                        //    await discord.FlushAsync(); 
+                        //}
+                        int bufferSize = 1024;
+                        int total = 0;
+
+                        byte[] buffer = new byte[bufferSize];
+                        while (!_disposeToken.IsCancellationRequested && !exit)
+                        {
+                            Plugin.Logger.Debug("Loop");
+                            try
+                            {
+                                int read = await output.ReadAsync(buffer, 0, bufferSize, _disposeToken.Token);
+                                total += read;
+                                Plugin.Logger.Debug($"Read {read} - Total {total}");
+                                if (read == 0)
+                                {
+                                    //No more data available
+                                    exit = true;
+                                    break;
+                                }
+                                await discord.WriteAsync(buffer, 0, read, _disposeToken.Token);
+                            }
+                            catch (Exception x)
+                            {
+                                exit = true;
+                                Plugin.Logger.Debug(x.Message);
+                            }
+
+                        }
+                        Plugin.Logger.Debug("Flushing");
+                        await discord.FlushAsync();
+                        Plugin.Logger.Debug("Done!");
+                    }
                 }
-                finally
-                {
-                    await discord.FlushAsync();
-                }
+            }
+            catch (Exception x)
+            {
+                Plugin.Logger.Debug(x.Message);
             }
         }
 
-        private static Process CreateStream(string path)
+        private Process? CreateStream(string path)
         {
-            var process = Process.Start(new ProcessStartInfo
+            var logPath = Path.Combine(Plugin.PluginInterface.AssemblyLocation.DirectoryName ?? string.Empty, "ffmpeg_log.txt");
+            try
             {
-                FileName = "ffmpeg",
-                Arguments = $"-hide_banner -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            });
-
-            return process ?? throw new InvalidOperationException("Failed to start process.");
+                var proc = Process.Start(new ProcessStartInfo
+                {
+                    FileName = "ffmpeg",
+                    Arguments = $"-xerror -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                });
+                Task.Run(async () =>
+                {
+                    Plugin.Logger.Debug($"Got error {await proc.StandardError.ReadToEndAsync()}");
+                });
+                proc.Exited += (object s, EventArgs a) =>
+                {
+                    Plugin.Logger.Debug("Process exited");
+                };
+                return proc;
+            }
+            catch (Exception x)
+            {
+                Plugin.Logger.Debug(x.Message);
+                return null;
+            }
         }
 
         private static Task Log(LogMessage msg)
