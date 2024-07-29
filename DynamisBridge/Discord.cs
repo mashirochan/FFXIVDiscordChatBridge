@@ -20,9 +20,6 @@ namespace DynamisBridge
             GatewayIntents = GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
         });
         private static IAudioClient? AudioClient;
-        private static AudioOutStream? AudioStream;
-        private static Process? FFMpeg;
-        private static Stream? Output;
         private readonly ConcurrentQueue<string> audioQueue = new();
         private bool isPlaying = false;
 
@@ -191,17 +188,24 @@ namespace DynamisBridge
 
             Plugin.Logger.Debug($"PlayAudio playing audio: {path}");
 
-            FFMpeg ??= CreateStream(path);
-            Output ??= FFMpeg.StandardOutput.BaseStream;
-            AudioStream ??= AudioClient.CreatePCMStream(AudioApplication.Voice);
-            try
+            using (var ffmpeg = CreateStream(path))
+            using (var output = ffmpeg.StandardOutput.BaseStream)
+            using (var discord = AudioClient.CreatePCMStream(AudioApplication.Voice))
             {
-                Plugin.Logger.Debug($"Playing voice message from {path}!");
-                await Output.CopyToAsync(AudioStream);
-            }
-            finally
-            {
-                await AudioStream.FlushAsync();
+                try
+                {
+                    Plugin.Logger.Debug($"Playing voice message from {path}!");
+
+                    // Run the CopyToAsync operation on a separate task
+                    await Task.Run(async () =>
+                    {
+                        await output.CopyToAsync(discord);
+                    });
+                }
+                finally
+                {
+                    await discord.FlushAsync();
+                }
             }
         }
 
