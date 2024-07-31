@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using System.Threading;
+using Victoria;
 
 namespace DynamisBridge
 {
@@ -47,8 +48,6 @@ namespace DynamisBridge
 
             if (Plugin.Config.AutoConnect == true)
                 await JoinVoiceChannel();
-
-            await 
         }
 
         private static async Task OnDisconnect(Exception ex)
