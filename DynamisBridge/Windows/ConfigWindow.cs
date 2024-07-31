@@ -28,8 +28,8 @@ public class ConfigWindow : Window, IDisposable
 
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new Vector2(400, 300),
-            MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
+            MinimumSize = new Vector2(400, 327),
+            MaximumSize = new Vector2(400, float.MaxValue)
         };
 
         plugin = _plugin;
@@ -171,9 +171,24 @@ public class ConfigWindow : Window, IDisposable
 
         ImGui.Spacing();
 
+        // Auto Connect Setting
+
+        var autoConnect = Plugin.Config.AutoConnect;
+        if (ImGui.Checkbox("Auto Connect", ref autoConnect))
+        {
+            Plugin.Config.AutoConnect = autoConnect;
+            Plugin.Logger.Debug($"AutoConnect set to: {(autoConnect ? "True" : "False")}");
+            Plugin.Config.Save();
+        }
+
+        ImGui.SameLine();
+
         // Join Type Setting
 
         var joinTypeText = Plugin.Config.JoinType.ToString();
+
+        ImGui.SetNextItemWidth(142.0f);
+
         using (var joinTypeCombo = ImRaii.Combo("Join Type", joinTypeText))
         {
             if (joinTypeCombo)

@@ -24,6 +24,7 @@ public class Configuration : IPluginConfiguration
     public string UserId { get; set; } = "";
     public bool PeekoMode { get; set; } = false;
     public string? Token { get; set; }
+    public bool AutoConnect { get; set; } = true;
 
     // the below exist just to make saving less cumbersome
     public void Save()

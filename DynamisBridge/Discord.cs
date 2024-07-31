@@ -23,6 +23,8 @@ namespace DynamisBridge
         private static IAudioClient? AudioClient;
         private readonly ConcurrentQueue<string> audioQueue = new();
         private bool isPlaying = false;
+        public static string CurrentGuildName = "Disconnected";
+        public static string CurrentChannelName = "Disconnected";
 
         public static async Task Main()
         {
@@ -43,10 +45,34 @@ namespace DynamisBridge
         {
             Plugin.Logger.Info($"Ready! Logged in as {Client.CurrentUser.GlobalName}");
 
+            if (Plugin.Config.AutoConnect == true)
+                await JoinVoiceChannel();
+
+            await 
+        }
+
+        private static async Task OnDisconnect(Exception ex)
+        {
+            Plugin.Logger.Info($"Bot disconnected: {ex.Message}");
+            await LeaveVoiceChannel();
+        }
+
+        public static async Task DisposeAsync()
+        {
+            await LeaveVoiceChannel();
+            Client.Log -= Log;
+            Client.Ready -= OnReady;
+            Client.Disconnected -= OnDisconnect;
+            Client.UserVoiceStateUpdated -= OnVoiceStateUpdated;
+            Client?.Dispose();
+        }
+
+        public static async Task JoinVoiceChannel()
+        {
             if (Plugin.Config.JoinType == JoinType.Specify)
             {
                 Plugin.Logger.Info("Specify mode is enabled, attempting to join voice channel...");
-                await JoinVoiceChannel();
+                await ConnectToChannel();
             }
             else if (Plugin.Config.JoinType == JoinType.Follow)
             {
@@ -70,7 +96,7 @@ namespace DynamisBridge
                         {
                             Plugin.Logger.Info($"Found {user.GlobalName} in {user.VoiceChannel.Name}, joining!");
                             found = true;
-                            await JoinVoiceChannel(user.VoiceChannel);
+                            await ConnectToChannel(user.VoiceChannel);
                             break;
                         }
                     }
@@ -82,26 +108,14 @@ namespace DynamisBridge
             }
         }
 
-        private static async Task OnDisconnect(Exception ex)
-        {
-            Plugin.Logger.Info($"Bot disconnected: {ex.Message}");
-            await LeaveVoiceChannel();
-        }
-
-        public static async Task DisposeAsync()
-        {
-            await LeaveVoiceChannel();
-            Client.Log -= Log;
-            Client.Ready -= OnReady;
-            Client.Disconnected -= OnDisconnect;
-            Client.UserVoiceStateUpdated -= OnVoiceStateUpdated;
-            Client?.Dispose();
-        }
-
-        private static async Task JoinVoiceChannel(SocketVoiceChannel? channel = null)
+        private static async Task ConnectToChannel(SocketVoiceChannel? channel = null)
         {
             if (AudioClient != null && AudioClient.ConnectionState == ConnectionState.Connected)
                 return;
+
+            Plugin.VoiceState = VoiceStates.Connecting;
+            CurrentGuildName = "Connecting...";
+            CurrentChannelName = "Connecting...";
 
             if (channel == null)
             {
@@ -109,6 +123,7 @@ namespace DynamisBridge
                 if (guild == null)
                 {
                     Plugin.Logger.Error("Guild not found!");
+                    Plugin.VoiceState = VoiceStates.Disconnected;
                     return;
                 }
 
@@ -116,12 +131,16 @@ namespace DynamisBridge
                 if (channel == null)
                 {
                     Plugin.Logger.Error("Voice channel not found!");
+                    Plugin.VoiceState = VoiceStates.Disconnected;
                     return;
                 }
             }
 
             AudioClient = await channel.ConnectAsync();
             Plugin.Logger.Info($"Joined {channel.Name}!");
+            Plugin.VoiceState = VoiceStates.Connected;
+            CurrentGuildName = channel.Guild.Name;
+            CurrentChannelName = channel.Name;
         }
 
         public static async Task LeaveVoiceChannel()
@@ -136,6 +155,9 @@ namespace DynamisBridge
             {
                 Plugin.Logger.Debug("Bot is not connected to any voice channel.");
             }
+            Plugin.VoiceState = VoiceStates.Disconnected;
+            CurrentGuildName = "Disconnected";
+            CurrentChannelName = "Disconnected";
         }
 
         private static async Task OnVoiceStateUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
@@ -147,7 +169,7 @@ namespace DynamisBridge
                 {
                     var channel = newState.VoiceChannel;
                     Plugin.Logger.Info($"{user.GlobalName} joined {channel.Name}, attempting to follow...");
-                    await JoinVoiceChannel(channel);
+                    await ConnectToChannel(channel);
                 }
                 else if (oldState.VoiceChannel != null && newState.VoiceChannel == null)
                 {
@@ -164,7 +186,7 @@ namespace DynamisBridge
             Plugin.Logger.Debug($"!isPlaying: {!isPlaying}");
             if (!isPlaying)
             {
-                _ = Task.Run(() => PlayNextInQueue());
+                Task.Run(PlayNextInQueue);
             }
         }
 

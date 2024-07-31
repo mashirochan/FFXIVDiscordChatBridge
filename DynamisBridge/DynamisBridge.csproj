@@ -1,29 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="Dalamud.Plugin.Bootstrap.targets" />
-
   <PropertyGroup>
-    <Version>0.0.0.1</Version>
-    <Description>A sample plugin.</Description>
+    <Version>0.1.0.2</Version>
+    <Description>Send FFXIV chat messages to a Discord TTS bot.</Description>
     <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
   <ItemGroup>
     <Content Include="..\Data\goat.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.15.3" />
     <PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="3.6.0" />
     <PackageReference Include="OpusDotNet.opus.win-x64" Version="1.3.1" />
     <PackageReference Include="Sodium.Core" Version="1.4.0-preview.1" />
+    <PackageReference Include="Victoria" Version="7.0.5" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="opus.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -32,4 +29,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="powershell -ExecutionPolicy Bypass -File IncrementVersion.ps1 -filePath &quot;$(MSBuildThisFileDirectory)DynamisBridge.csproj&quot;" />
+  </Target>
 </Project>

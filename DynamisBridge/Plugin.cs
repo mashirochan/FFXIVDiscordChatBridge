@@ -39,6 +39,8 @@ public sealed class Plugin : IDalamudPlugin
 
     private bool isDisposed = false;
 
+    public static VoiceStates VoiceState = VoiceStates.Disconnected;
+
     public Plugin()
     {
         if (PluginInterface?.AssemblyLocation?.Directory?.FullName is string pluginDir)
@@ -89,7 +91,7 @@ public sealed class Plugin : IDalamudPlugin
         Chat.ChatMessage -= OnChatMessage;
 
         ConfigWindow.Dispose();
-        MainWindow.Dispose();
+        ((IDisposable)MainWindow).Dispose();
 
         CommandManager.RemoveHandler(SettingsCommand1);
         CommandManager.RemoveHandler(SettingsCommand2);
@@ -115,7 +117,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool ishandled)
     {
-        if (type == Config.ChatChannel && IsCharacterWatched(sender.TextValue))
+        if (Config.PluginEnabled && type == Config.ChatChannel && IsCharacterWatched(sender.TextValue))
         {
             Logger.Debug($"Message received in {type} from {sender}: {message}");
             //var pattern = @"[^A-Za-zÀ-ÖØ-öø-ÿ0-9.,;:!?'\-\s""(){}[\]<>@#$%^&*+=_~]";
