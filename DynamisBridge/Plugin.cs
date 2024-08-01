@@ -17,6 +17,8 @@ using System.Reactive.Joins;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Victoria;
+using Discord.WebSocket;
+using Discord;
 
 namespace DynamisBridge;
 
@@ -35,16 +37,13 @@ public sealed class Plugin : IDalamudPlugin
     private const string SettingsCommand2 = "/dbridge";
 
     public static Configuration Config { get; set; } = new Configuration();
-
-    public readonly WindowSystem WindowSystem = new("DynamisBridge");
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
+    public IServiceProvider ServiceProvider { get; private set; }
 
+    public readonly WindowSystem WindowSystem = new("DynamisBridge");
     private bool isDisposed = false;
-
     public static VoiceStates VoiceState = VoiceStates.Disconnected;
-
-    private readonly IServiceProvider serviceProvider;
 
     public Plugin()
     {
@@ -88,8 +87,19 @@ public sealed class Plugin : IDalamudPlugin
         Chat.ChatMessage += OnChatMessage;
         _ = Discord.Main();
 
-        var serviceCollection = new ServiceCollection().AddLavaNode().AddSingleton<AudioService>();
-        serviceProvider = serviceCollection.BuildServiceProvider();
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton<DiscordSocketClient>(new DiscordSocketClient(new DiscordSocketConfig
+        {
+            GatewayIntents = GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
+        }));
+        serviceCollection.AddLavaNode();
+        serviceCollection.AddSingleton<AudioService>();
+        serviceCollection.AddSingleton<AudioModule>();
+        serviceCollection.AddSingleton<Discord>();
+        ServiceProvider = serviceCollection.BuildServiceProvider();
+
+        var discordService = ServiceProvider.GetRequiredService<Discord>();
+        discordService.Start();
     }
 
     public void Dispose()

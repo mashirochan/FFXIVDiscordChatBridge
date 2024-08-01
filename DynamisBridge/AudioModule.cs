@@ -13,7 +13,7 @@ using System.Collections.Concurrent;
 using Google.Api;
 using Victoria.Rest.Search;
 
-public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, AudioService audioService) : ModuleBase<SocketCommandContext>
+public sealed class AudioModule
 {
     private static readonly IEnumerable<int> Range = Enumerable.Range(1900, 2000);
     private readonly ConcurrentQueue<string> audioQueue = new();
@@ -22,6 +22,14 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
     private static SocketGuild? CurrentGuild;
     public static string CurrentChannelName = "Disconnected";
     private static SocketVoiceChannel? CurrentChannel;
+    private readonly LavaNode<LavaPlayer<LavaTrack>, LavaTrack> _lavaNode;
+    private readonly AudioService _audioService;
+
+    public AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, AudioService audioService)
+    {
+        _lavaNode = lavaNode;
+        _audioService = audioService;
+    }
 
     public async Task JoinAsync()
     {
@@ -34,7 +42,7 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
         {
             var found = false;
             Plugin.Logger.Info("Follow mode is enabled, attempting to join user's voice channel...");
-            foreach (var guild in AudioService._socketClient.Guilds)
+            foreach (var guild in _audioService._socketClient.Guilds)
             {
                 Plugin.Logger.Debug($"Searcing for user in {guild.Name}...");
                 var user = guild.GetUser(ulong.Parse(Plugin.Config.UserId));
@@ -64,9 +72,9 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
         }
     }
 
-    private async Task ConnectToChannel(SocketVoiceChannel? channel = null)
+    public async Task ConnectToChannel(SocketVoiceChannel? channel = null)
     {
-        if (lavaNode != null && lavaNode.IsConnected)
+        if (_lavaNode != null && _lavaNode.IsConnected)
             return;
 
         Plugin.VoiceState = VoiceStates.Connecting;
@@ -74,7 +82,7 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
         CurrentChannelName = "Connecting...";
         if (channel == null)
         {
-            var guild = AudioService._socketClient.GetGuild(ulong.Parse(Plugin.Config.GuildId));
+            var guild = _audioService._socketClient.GetGuild(ulong.Parse(Plugin.Config.GuildId));
             if (guild == null)
             {
                 Plugin.Logger.Error("Guild not found!");
@@ -93,7 +101,7 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
 
         try
         {
-            await lavaNode.JoinAsync(channel);
+            await _lavaNode.JoinAsync(channel);
             Plugin.Logger.Info($"Joined {channel.Name}!");
             Plugin.VoiceState = VoiceStates.Connected;
             CurrentGuild = channel.Guild;
@@ -109,11 +117,11 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
 
     public async Task LeaveAsync()
     {
-        if (lavaNode != null && lavaNode.IsConnected && CurrentGuild != null && CurrentChannel != null)
+        if (_lavaNode != null && _lavaNode.IsConnected && CurrentGuild != null && CurrentChannel != null)
         {
             try
             {
-                await lavaNode.LeaveAsync(CurrentChannel);
+                await _lavaNode.LeaveAsync(CurrentChannel);
                 Plugin.Logger.Info("Disconnected from voice channel!");
             }
             catch (Exception ex)
@@ -144,12 +152,12 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
             return;
         }
 
-        var player = await lavaNode.TryGetPlayerAsync(CurrentGuild.Id);
+        var player = await _lavaNode.TryGetPlayerAsync(CurrentGuild.Id);
         if (player == null)
         {
             try
             {
-                player = await lavaNode.JoinAsync(CurrentChannel);
+                player = await _lavaNode.JoinAsync(CurrentChannel);
                 Plugin.Logger.Info($"Joined {CurrentChannelName}!");
             }
             catch (Exception ex)
@@ -158,7 +166,7 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
             }
         }
 
-        var searchResponse = await lavaNode.LoadTrackAsync(filePath);
+        var searchResponse = await _lavaNode.LoadTrackAsync(filePath);
         if (searchResponse.Type is SearchType.Empty or SearchType.Error)
         {
             Plugin.Logger.Error($"Could not find filepath: {filePath}");
@@ -168,7 +176,7 @@ public sealed class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaN
         var track = searchResponse.Tracks.FirstOrDefault();
         if (player.GetQueue().Count == 0)
         {
-            await player.PlayAsync(lavaNode, track);
+            await player.PlayAsync(_lavaNode, track);
             Plugin.Logger.Info($"Now playing: {filePath}");
             return;
         }

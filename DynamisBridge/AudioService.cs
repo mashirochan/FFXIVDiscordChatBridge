@@ -16,7 +16,7 @@ using DynamisBridge;
 public sealed class AudioService
 {
     private readonly LavaNode<LavaPlayer<LavaTrack>, LavaTrack> _lavaNode;
-    public static DiscordSocketClient _socketClient;
+    public readonly DiscordSocketClient _socketClient;
     private readonly ILogger _logger;
     private readonly ConcurrentDictionary<ulong, CancellationTokenSource> _disconnectTokens;
 
