@@ -1,0 +1,31 @@
+server:
+  port: 33948
+  address: 127.0.0.1
+
+lavalink:
+  server:
+    sources:
+      youtube: false
+      bandcamp: false
+      soundcloud: false
+      twitch: false
+      vimeo: false
+      mixer: false
+      http: false
+      local: true
+    bufferDurationMs: 400
+    youtubePlaylistLoadLimit: 6
+    playerUpdateInterval: 5
+    youtubeSearchEnabled: false
+    soundcloudSearchEnabled: false
+  lavaplayer:
+    # Lavaplayer options can be set here, e.g.:
+    # youtube:
+    #   playlistPageLimit: 10
+    #   searchResultsLimit: 10
+    #   mixerSearchResultsLimit: 10
+    #   soundcloudSearchResultsLimit: 10
+    #   bandcampSearchResultsLimit: 10
+    #   vimeoSearchResultsLimit: 10
+    #   httpSearchResultsLimit: 10
+    #   twitchSearchResultsLimit: 10

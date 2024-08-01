@@ -14,6 +14,9 @@ using System.Runtime.InteropServices;
 using System;
 using System.IO;
 using System.Reactive.Joins;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Victoria;
 
 namespace DynamisBridge;
 
@@ -40,6 +43,8 @@ public sealed class Plugin : IDalamudPlugin
     private bool isDisposed = false;
 
     public static VoiceStates VoiceState = VoiceStates.Disconnected;
+
+    private readonly IServiceProvider serviceProvider;
 
     public Plugin()
     {
@@ -82,6 +87,9 @@ public sealed class Plugin : IDalamudPlugin
 
         Chat.ChatMessage += OnChatMessage;
         _ = Discord.Main();
+
+        var serviceCollection = new ServiceCollection().AddLavaNode().AddSingleton<AudioService>();
+        serviceProvider = serviceCollection.BuildServiceProvider();
     }
 
     public void Dispose()

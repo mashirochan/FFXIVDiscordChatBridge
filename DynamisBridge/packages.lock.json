@@ -32,6 +32,15 @@
           "Google.LongRunning": "[3.2.0, 4.0.0)"
         }
       },
+      "Microsoft.Extensions.DependencyInjection": {
+        "type": "Direct",
+        "requested": "[9.0.0-preview.6.24327.7, )",
+        "resolved": "9.0.0-preview.6.24327.7",
+        "contentHash": "/IhgrQH1Rw87DsCIIT+wKitImU7uOcrLnCaQfMko8n8Ev08haV2LsWJdwalWururWRnvqjyS03yrItPj9qfAdg==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0-preview.6.24327.7"
+        }
+      },
       "OpusDotNet.opus.win-x64": {
         "type": "Direct",
         "requested": "[1.3.1, )",
@@ -228,8 +237,8 @@
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "fGLiCRLMYd00JYpClraLjJTNKLmMJPnqxMaiRzEBIIvevlzxz33mXy39Lkd48hu1G+N21S7QpaO5ZzKsI6FRuA=="
+        "resolved": "9.0.0-preview.6.24327.7",
+        "contentHash": "yz7PttoN1yClo8tBpL+QuaJuaS750iKcI7lvue5G4dD0xJQ1axMOB6aiIukchZJa31f/jpRtB9jErcZLn+V6xQ=="
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Transitive",
