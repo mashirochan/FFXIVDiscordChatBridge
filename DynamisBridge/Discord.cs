@@ -47,8 +47,6 @@ namespace DynamisBridge
 
             if (Plugin.Config.AutoConnect == true)
                 await JoinVoiceChannel();
-
-            await 
         }
 
         private static async Task OnDisconnect(Exception ex)
