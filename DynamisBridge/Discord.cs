@@ -2,31 +2,50 @@ using Discord;
 using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
-using Discord.Audio;
-using System.Diagnostics;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
-using System.Threading;
 using Victoria;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DynamisBridge
 {
-    internal class Discord
+    public class Discord
     {
+        private readonly ServiceProvider _services;
         private readonly DiscordSocketClient _client;
         private readonly AudioModule _audioModule;
+        private readonly LavaNode _lavaNode;
 
-        public Discord(DiscordSocketClient client, AudioModule audioModule)
+        public Discord()
         {
-            _client = client;
-            _audioModule = audioModule;
+            _services = ConfigureServices();
+            _client = _services.GetRequiredService<DiscordSocketClient>();
+            _lavaNode = _services.GetRequiredService<LavaNode>();
+            _audioModule = _services.GetRequiredService<AudioModule>();
 
             _client.Log += Log;
             _client.Ready += OnReady;
             _client.Disconnected += OnDisconnect;
             _client.UserVoiceStateUpdated += OnVoiceStateUpdated;
+        }
+
+        public async Task PlayAudioFile(string filePath)
+        {
+            await _audioModule.PlayAsync(filePath);
+        }
+
+        private ServiceProvider ConfigureServices()
+        {
+            var services = new ServiceCollection();
+
+            services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+            {
+                GatewayIntents = GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
+            }));
+
+            services.AddLavaNode();
+            services.AddSingleton<AudioModule>();
+            services.AddSingleton<AudioService>();
+
+            return services.BuildServiceProvider();
         }
 
         public async Task Start()
@@ -43,8 +62,18 @@ namespace DynamisBridge
         {
             Plugin.Logger.Info($"Ready! Logged in as {_client.CurrentUser.GlobalName}");
 
-            if (Plugin.Config.AutoConnect == true)
-                await _audioModule.JoinAsync();
+            try
+            {
+                if (Plugin.Config.AutoConnect == true)
+                    await _audioModule.AutoJoinAsync();
+
+                if (!_lavaNode.IsConnected)
+                    await _services.UseLavaNodeAsync();
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger.Error(ex.Message);
+            }
         }
 
         private async Task OnDisconnect(Exception ex)
@@ -72,7 +101,7 @@ namespace DynamisBridge
                 {
                     var channel = newState.VoiceChannel;
                     Plugin.Logger.Info($"{user.GlobalName} joined {channel.Name}, attempting to follow...");
-                    await _audioModule.ConnectToChannel(channel);
+                    await _audioModule.JoinAsync(channel);
                 }
                 else if (oldState.VoiceChannel != null && newState.VoiceChannel == null)
                 {
@@ -81,6 +110,26 @@ namespace DynamisBridge
                     await _audioModule.LeaveAsync();
                 }
             }
+        }
+
+        public async Task JoinVoiceChannel()
+        {
+            await _audioModule.JoinAsync();
+        }
+
+        public async Task LeaveVoiceChannel()
+        {
+            await _audioModule.LeaveAsync();
+        }
+
+        public string GetGuildName()
+        {
+            return _audioModule.CurrentGuildName;
+        }
+
+        public string GetChannelName()
+        {
+            return _audioModule.CurrentChannelName;
         }
 
         private static Task Log(LogMessage msg)

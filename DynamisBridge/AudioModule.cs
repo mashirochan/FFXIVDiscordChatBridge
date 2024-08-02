@@ -15,34 +15,34 @@ using Victoria.Rest.Search;
 
 public sealed class AudioModule
 {
-    private static readonly IEnumerable<int> Range = Enumerable.Range(1900, 2000);
-    private readonly ConcurrentQueue<string> audioQueue = new();
     private bool isPlaying = false;
-    public static string CurrentGuildName = "Disconnected";
+    public string CurrentGuildName = "Disconnected";
     private static SocketGuild? CurrentGuild;
-    public static string CurrentChannelName = "Disconnected";
+    public string CurrentChannelName = "Disconnected";
     private static SocketVoiceChannel? CurrentChannel;
     private readonly LavaNode<LavaPlayer<LavaTrack>, LavaTrack> _lavaNode;
     private readonly AudioService _audioService;
+    private readonly DiscordSocketClient _client;
 
-    public AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, AudioService audioService)
+    public AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, AudioService audioService, DiscordSocketClient client)
     {
         _lavaNode = lavaNode;
         _audioService = audioService;
+        _client = client;
     }
 
-    public async Task JoinAsync()
+    public async Task AutoJoinAsync()
     {
         if (Plugin.Config.JoinType == JoinType.Specify)
         {
             Plugin.Logger.Info("Specify mode is enabled, attempting to join voice channel...");
-            await ConnectToChannel();
+            await JoinAsync();
         }
         else if (Plugin.Config.JoinType == JoinType.Follow)
         {
             var found = false;
             Plugin.Logger.Info("Follow mode is enabled, attempting to join user's voice channel...");
-            foreach (var guild in _audioService._socketClient.Guilds)
+            foreach (var guild in _client.Guilds)
             {
                 Plugin.Logger.Debug($"Searcing for user in {guild.Name}...");
                 var user = guild.GetUser(ulong.Parse(Plugin.Config.UserId));
@@ -60,7 +60,7 @@ public sealed class AudioModule
                     {
                         Plugin.Logger.Info($"Found {user.GlobalName} in {user.VoiceChannel.Name}, joining!");
                         found = true;
-                        await ConnectToChannel(user.VoiceChannel);
+                        await JoinAsync(user.VoiceChannel);
                         break;
                     }
                 }
@@ -72,7 +72,7 @@ public sealed class AudioModule
         }
     }
 
-    public async Task ConnectToChannel(SocketVoiceChannel? channel = null)
+    public async Task JoinAsync(SocketVoiceChannel? channel = null)
     {
         if (_lavaNode != null && _lavaNode.IsConnected)
             return;
@@ -82,7 +82,7 @@ public sealed class AudioModule
         CurrentChannelName = "Connecting...";
         if (channel == null)
         {
-            var guild = _audioService._socketClient.GetGuild(ulong.Parse(Plugin.Config.GuildId));
+            var guild = _client.GetGuild(ulong.Parse(Plugin.Config.GuildId));
             if (guild == null)
             {
                 Plugin.Logger.Error("Guild not found!");

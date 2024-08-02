@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace DynamisBridge
 {
@@ -19,7 +21,7 @@ namespace DynamisBridge
             {
                 FileName = "java",
                 Arguments = "-jar Lavalink.jar",
-                WorkingDirectory = @"path\to\lavalink\directory", // Set the directory where Lavalink.jar is located
+                WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), // Set the directory where Lavalink.jar is located
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,

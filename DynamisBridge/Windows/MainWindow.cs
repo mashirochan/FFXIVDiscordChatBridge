@@ -18,9 +18,9 @@ namespace DynamisBridge.Windows;
 
 public class MainWindow : Window, IDisposable
 {
-    private readonly Plugin plugin;
+    private readonly Plugin _plugin;
 
-    public MainWindow(Plugin _plugin)
+    public MainWindow(Plugin plugin)
         : base($"Dynamis Bridge v{Assembly.GetExecutingAssembly().GetName().Version}##dynamisbridge_main", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoResize)
     {
         SizeConstraints = new WindowSizeConstraints
@@ -29,7 +29,7 @@ public class MainWindow : Window, IDisposable
             MaximumSize = new Vector2(400, 210)
         };
 
-        plugin = _plugin;
+        _plugin = plugin;
     }
 
     public void Dispose() { }
@@ -53,7 +53,7 @@ public class MainWindow : Window, IDisposable
 
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Cog, "Settings"))
         {
-            plugin.ToggleConfigUI();
+            _plugin.ToggleConfigUI();
         }
 
         ImGui.Spacing();
@@ -98,7 +98,7 @@ public class MainWindow : Window, IDisposable
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - (ImGui.CalcTextSize(FontAwesomeIcon.Stop.ToIconString() + "Disconnect").X + (ImGui.GetStyle().FramePadding.X * 2)));
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Stop, "Disconnect"))
             {
-                Task.Run(Discord.LeaveVoiceChannel);
+                Task.Run(_plugin.DiscordService.LeaveVoiceChannel);
             }
         }
         else if (Plugin.VoiceState == VoiceStates.Disconnected)
@@ -106,17 +106,17 @@ public class MainWindow : Window, IDisposable
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - (ImGui.CalcTextSize(FontAwesomeIcon.Play.ToIconString() + "Connect").X + (ImGui.GetStyle().FramePadding.X * 2)));
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Play, "Connect"))
             {
-                Task.Run(Discord.JoinVoiceChannel);
+                Task.Run(_plugin.DiscordService.JoinVoiceChannel);
             }
         }
 
         ImGui.Spacing();
 
-        ImGui.Text($"Current Guild: {Discord.CurrentGuildName}");
+        ImGui.Text($"Current Guild: {_plugin.DiscordService.GetGuildName()}");
 
         ImGui.Spacing();
 
-        ImGui.Text($"Current Voice: {Discord.CurrentChannelName}");
+        ImGui.Text($"Current Voice: {_plugin.DiscordService.GetChannelName()}");
     }
 
     public static void CenteredText(string text)

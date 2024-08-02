@@ -44,6 +44,9 @@ public sealed class Plugin : IDalamudPlugin
     public readonly WindowSystem WindowSystem = new("DynamisBridge");
     private bool isDisposed = false;
     public static VoiceStates VoiceState = VoiceStates.Disconnected;
+    private readonly Discord _discord;
+    public Discord DiscordService => _discord;
+    public LavalinkManager LavalinkManager;
 
     public Plugin()
     {
@@ -85,21 +88,12 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
 
         Chat.ChatMessage += OnChatMessage;
-        _ = Discord.Main();
 
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<DiscordSocketClient>(new DiscordSocketClient(new DiscordSocketConfig
-        {
-            GatewayIntents = GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
-        }));
-        serviceCollection.AddLavaNode();
-        serviceCollection.AddSingleton<AudioService>();
-        serviceCollection.AddSingleton<AudioModule>();
-        serviceCollection.AddSingleton<Discord>();
-        ServiceProvider = serviceCollection.BuildServiceProvider();
+        LavalinkManager = new LavalinkManager();
+        LavalinkManager.StartLavalink();
 
-        var discordService = ServiceProvider.GetRequiredService<Discord>();
-        discordService.Start();
+        _discord = new Discord();
+        Task.Run(() => _discord.Start());
     }
 
     public void Dispose()
@@ -114,7 +108,7 @@ public sealed class Plugin : IDalamudPlugin
         CommandManager.RemoveHandler(SettingsCommand1);
         CommandManager.RemoveHandler(SettingsCommand2);
 
-        Task.Run(() => DisposeAsync()).GetAwaiter().GetResult();
+        Task.Run(DisposeAsync).GetAwaiter().GetResult();
     }
 
     private async void DisposeAsync()
@@ -124,7 +118,7 @@ public sealed class Plugin : IDalamudPlugin
 
         isDisposed = true;
 
-        await Discord.DisposeAsync();
+        await _discord.DisposeAsync();
     }
 
     private void OnCommand(string command, string args)
@@ -161,11 +155,11 @@ public sealed class Plugin : IDalamudPlugin
         }
     }
 
-    public static async void AddMessageToQueue(string message)
+    public async void AddMessageToQueue(string message)
     {
         var filePath = await Google.CreateAudioFile(message);
         Logger.Debug($"filePath: {filePath}");
-        Discord.instance.EnqueueAudio(filePath);
+        await _discord.PlayAudioFile(filePath);
     }
 
     private static bool IsCharacterWatched(SeString player)

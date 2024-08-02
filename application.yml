@@ -4,6 +4,7 @@ server:
 
 lavalink:
   server:
+    password: "peekoiscute"
     sources:
       youtube: false
       bandcamp: false
