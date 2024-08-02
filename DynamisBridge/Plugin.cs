@@ -47,6 +47,7 @@ public sealed class Plugin : IDalamudPlugin
     private readonly Discord _discord;
     public Discord DiscordService => _discord;
     public LavalinkManager LavalinkManager;
+    private readonly ServiceProvider _services;
 
     public Plugin()
     {
@@ -92,8 +93,28 @@ public sealed class Plugin : IDalamudPlugin
         LavalinkManager = new LavalinkManager();
         LavalinkManager.StartLavalink();
 
+        _services = ConfigureServices();
+
+        Task.Run(() => _services.UseLavaNodeAsync());
+
         _discord = new Discord();
         Task.Run(() => _discord.Start());
+    }
+
+    private ServiceProvider ConfigureServices()
+    {
+        var services = new ServiceCollection();
+
+        services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+        {
+            GatewayIntents = GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
+        }));
+
+        services.AddLavaNode();
+        services.AddSingleton<AudioModule>();
+        services.AddSingleton<AudioService>();
+
+        return services.BuildServiceProvider();
     }
 
     public void Dispose()
@@ -132,8 +153,6 @@ public sealed class Plugin : IDalamudPlugin
         if (Config.PluginEnabled && type == Config.ChatChannel && IsCharacterWatched(sender.TextValue))
         {
             Logger.Debug($"Message received in {type} from {sender}: {message}");
-            //var pattern = @"[^A-Za-zÀ-ÖØ-öø-ÿ0-9.,;:!?'\-\s""(){}[\]<>@#$%^&*+=_~]";
-            //var trimmedMessage = Regex.Replace(message.ToString().Trim(), pattern, string.Empty);
             var trimmedMessage = message.ToString().Trim();
             var prefix = Config.PrefixCommand?.TextValue ?? string.Empty;
 

@@ -3,23 +3,20 @@ using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
 using Victoria;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DynamisBridge
 {
     public class Discord
     {
-        private readonly ServiceProvider _services;
         private readonly DiscordSocketClient _client;
         private readonly AudioModule _audioModule;
         private readonly LavaNode _lavaNode;
 
-        public Discord()
+        public Discord(DiscordSocketClient client, LavaNode lavaNode, AudioModule audioModule)
         {
-            _services = ConfigureServices();
-            _client = _services.GetRequiredService<DiscordSocketClient>();
-            _lavaNode = _services.GetRequiredService<LavaNode>();
-            _audioModule = _services.GetRequiredService<AudioModule>();
+            _client = client;
+            _lavaNode = lavaNode;
+            _audioModule = audioModule;
 
             _client.Log += Log;
             _client.Ready += OnReady;
@@ -30,22 +27,6 @@ namespace DynamisBridge
         public async Task PlayAudioFile(string filePath)
         {
             await _audioModule.PlayAsync(filePath);
-        }
-
-        private ServiceProvider ConfigureServices()
-        {
-            var services = new ServiceCollection();
-
-            services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
-            {
-                GatewayIntents = GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
-            }));
-
-            services.AddLavaNode();
-            services.AddSingleton<AudioModule>();
-            services.AddSingleton<AudioService>();
-
-            return services.BuildServiceProvider();
         }
 
         public async Task Start()
@@ -66,9 +47,6 @@ namespace DynamisBridge
             {
                 if (Plugin.Config.AutoConnect == true)
                     await _audioModule.AutoJoinAsync();
-
-                if (!_lavaNode.IsConnected)
-                    await _services.UseLavaNodeAsync();
             }
             catch (Exception ex)
             {
