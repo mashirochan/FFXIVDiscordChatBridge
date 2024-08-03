@@ -7,13 +7,10 @@ using DynamisBridge.Windows;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using System.Text.RegularExpressions;
-using System.Text.Json;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System;
 using System.IO;
-using System.Reactive.Joins;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Victoria;
@@ -109,6 +106,8 @@ public sealed class Plugin : IDalamudPlugin
             GatewayIntents = GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
         }));
 
+        services.AddLogging();
+
         services.AddLavaNode(config =>
         {
             config.Hostname = "127.0.0.1";
@@ -124,6 +123,11 @@ public sealed class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
+        if (isDisposed)
+            return;
+
+        isDisposed = true;
+
         WindowSystem.RemoveAllWindows();
 
         Chat.ChatMessage -= OnChatMessage;
@@ -134,17 +138,20 @@ public sealed class Plugin : IDalamudPlugin
         CommandManager.RemoveHandler(SettingsCommand1);
         CommandManager.RemoveHandler(SettingsCommand2);
 
-        Task.Run(DisposeAsync).GetAwaiter().GetResult();
+        DisposeAsync().GetAwaiter().GetResult(); // Await disposal properly
     }
 
-    private async void DisposeAsync()
+    private async Task DisposeAsync()
     {
-        if (isDisposed)
-            return;
-
-        isDisposed = true;
-
-        await _discord.DisposeAsync();
+        try
+        {
+            await _discord.DisposeAsync();
+            Plugin.Logger.Info("Plugin disposed successfully.");
+        }
+        catch (Exception ex)
+        {
+            Plugin.Logger.Error($"Error during plugin disposal: {ex.Message}");
+        }
     }
 
     private void OnCommand(string command, string args)

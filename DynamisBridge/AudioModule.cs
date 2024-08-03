@@ -126,13 +126,14 @@ public sealed class AudioModule
             }
             catch (Exception ex)
             {
-                Plugin.Logger.Error(ex.Message);
+                Plugin.Logger.Error($"Error while leaving voice channel: {ex.Message}");
             }
         }
         else
         {
-            Plugin.Logger.Debug("Bot is not connected to any voice channel.");
+            Plugin.Logger.Debug("Bot is not connected to any voice channel or LavaNode is not available.");
         }
+
         Plugin.VoiceState = VoiceStates.Disconnected;
         CurrentGuildName = "Disconnected";
         CurrentChannelName = "Disconnected";

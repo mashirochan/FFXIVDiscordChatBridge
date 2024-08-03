@@ -13,7 +13,7 @@ namespace DynamisBridge
         {
             if (lavalinkProcess != null && !lavalinkProcess.HasExited)
             {
-                // Lavalink is already running
+                Plugin.Logger.Debug("Lavalink is already running!");
                 return;
             }
 

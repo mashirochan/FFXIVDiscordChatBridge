@@ -17,14 +17,22 @@ namespace DynamisBridge
         public Discord(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _client = serviceProvider.GetRequiredService<DiscordSocketClient>();
-            _lavaNode = serviceProvider.GetRequiredService<LavaNode<LavaPlayer<LavaTrack>, LavaTrack>>();
-            _audioModule = serviceProvider.GetRequiredService<AudioModule>();
 
-            _client.Log += Log;
-            _client.Ready += OnReady;
-            _client.Disconnected += OnDisconnect;
-            _client.UserVoiceStateUpdated += OnVoiceStateUpdated;
+            try
+            {
+                _client = serviceProvider.GetRequiredService<DiscordSocketClient>();
+                _lavaNode = serviceProvider.GetRequiredService<LavaNode<LavaPlayer<LavaTrack>, LavaTrack>>();
+                _audioModule = serviceProvider.GetRequiredService<AudioModule>();
+
+                _client.Log += Log;
+                _client.Ready += OnReady;
+                _client.Disconnected += OnDisconnect;
+                _client.UserVoiceStateUpdated += OnVoiceStateUpdated;
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger.Error($"Service resolution failed: {ex.Message}");
+            }
         }
 
         public async Task Start()
@@ -44,6 +52,7 @@ namespace DynamisBridge
             try
             {
                 await _serviceProvider.UseLavaNodeAsync();
+                Plugin.Logger.Info("Connected to Lavalink!");
 
                 if (Plugin.Config.AutoConnect == true)
                     await _audioModule.AutoJoinAsync();
@@ -62,12 +71,31 @@ namespace DynamisBridge
 
         public async Task DisposeAsync()
         {
-            await _audioModule.LeaveAsync();
-            _client.Log -= Log;
-            _client.Ready -= OnReady;
-            _client.Disconnected -= OnDisconnect;
-            _client.UserVoiceStateUpdated -= OnVoiceStateUpdated;
-            _client?.Dispose();
+            if (_audioModule != null)
+            {
+                await _audioModule.LeaveAsync();
+            }
+            else
+            {
+                Plugin.Logger.Warning("Audio module is null during disposal.");
+            }
+
+            if (_client != null)
+            {
+                _client.Log -= Log;
+                _client.Ready -= OnReady;
+                _client.Disconnected -= OnDisconnect;
+                _client.UserVoiceStateUpdated -= OnVoiceStateUpdated;
+
+                await _client.LogoutAsync();
+                await _client.StopAsync();
+
+                _client.Dispose();
+            }
+            else
+            {
+                Plugin.Logger.Warning("Discord client is null during disposal.");
+            }
         }
 
         private async Task OnVoiceStateUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)

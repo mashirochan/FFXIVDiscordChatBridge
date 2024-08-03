@@ -41,6 +41,17 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0-preview.6.24327.7"
         }
       },
+      "Microsoft.Extensions.Logging": {
+        "type": "Direct",
+        "requested": "[9.0.0-preview.6.24327.7, )",
+        "resolved": "9.0.0-preview.6.24327.7",
+        "contentHash": "tlkQLKFFTi+H6umvfx9AaZJte5Al/w3TMdgypN1cUKga+bKMdfOtuKLhehcvk+tp3n1fYZ3mBV3rGwJaaK3Gnw==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "9.0.0-preview.6.24327.7",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.0-preview.6.24327.7",
+          "Microsoft.Extensions.Options": "9.0.0-preview.6.24327.7"
+        }
+      },
       "OpusDotNet.opus.win-x64": {
         "type": "Direct",
         "requested": "[1.3.1, )",
@@ -242,11 +253,25 @@
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Transitive",
-        "resolved": "8.0.1",
-        "contentHash": "RIFgaqoaINxkM2KTOw72dmilDmTrYA0ns2KW4lDz4gZ2+o6IQ894CzmdL3StM2oh7QQq44nCWiqKqc4qUI9Jmg==",
+        "resolved": "9.0.0-preview.6.24327.7",
+        "contentHash": "NegkZfTcD4KMDhoUZdJBeveV49W9K9RYRfnJuTqgToNoqoTROMwxQD4PCpoQAsORmk7Y9I/p8YjA9iKpro/Ysg==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0-preview.6.24327.7"
         }
+      },
+      "Microsoft.Extensions.Options": {
+        "type": "Transitive",
+        "resolved": "9.0.0-preview.6.24327.7",
+        "contentHash": "iCNzE32Jeb3Z7F1PF9FYPGn7rAlG/wHHyrGm6re8+31mU1mpzQX+qoOald1Uo5jJtx/JTLf40OKSZn1cC+Wmyg==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0-preview.6.24327.7",
+          "Microsoft.Extensions.Primitives": "9.0.0-preview.6.24327.7"
+        }
+      },
+      "Microsoft.Extensions.Primitives": {
+        "type": "Transitive",
+        "resolved": "9.0.0-preview.6.24327.7",
+        "contentHash": "VogVd1RpBK7/KjpKIxNQPiPgAvh84tgiTvQmk5mXDFCR0sINvyyIZSO9cE0dRtAQBqkd1jlmcfTwoGVS5EaMUg=="
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
