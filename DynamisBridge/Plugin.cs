@@ -90,14 +90,13 @@ public sealed class Plugin : IDalamudPlugin
 
         Chat.ChatMessage += OnChatMessage;
 
+        // Lavalink Setup
         LavalinkManager = new LavalinkManager();
         LavalinkManager.StartLavalink();
 
         _services = ConfigureServices();
 
-        Task.Run(() => _services.UseLavaNodeAsync());
-
-        _discord = new Discord();
+        _discord = new Discord(_services);
         Task.Run(() => _discord.Start());
     }
 
@@ -110,7 +109,13 @@ public sealed class Plugin : IDalamudPlugin
             GatewayIntents = GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
         }));
 
-        services.AddLavaNode();
+        services.AddLavaNode(config =>
+        {
+            config.Hostname = "127.0.0.1";
+            config.Port = 33948;
+            config.Authorization = "peekoiscute";
+            config.SelfDeaf = true;
+        });
         services.AddSingleton<AudioModule>();
         services.AddSingleton<AudioService>();
 

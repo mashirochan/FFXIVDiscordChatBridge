@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using Victoria;
@@ -10,23 +11,20 @@ namespace DynamisBridge
     {
         private readonly DiscordSocketClient _client;
         private readonly AudioModule _audioModule;
-        private readonly LavaNode _lavaNode;
+        private readonly LavaNode<LavaPlayer<LavaTrack>, LavaTrack> _lavaNode;
+        private readonly IServiceProvider _serviceProvider;
 
-        public Discord(DiscordSocketClient client, LavaNode lavaNode, AudioModule audioModule)
+        public Discord(IServiceProvider serviceProvider)
         {
-            _client = client;
-            _lavaNode = lavaNode;
-            _audioModule = audioModule;
+            _serviceProvider = serviceProvider;
+            _client = serviceProvider.GetRequiredService<DiscordSocketClient>();
+            _lavaNode = serviceProvider.GetRequiredService<LavaNode<LavaPlayer<LavaTrack>, LavaTrack>>();
+            _audioModule = serviceProvider.GetRequiredService<AudioModule>();
 
             _client.Log += Log;
             _client.Ready += OnReady;
             _client.Disconnected += OnDisconnect;
             _client.UserVoiceStateUpdated += OnVoiceStateUpdated;
-        }
-
-        public async Task PlayAudioFile(string filePath)
-        {
-            await _audioModule.PlayAsync(filePath);
         }
 
         public async Task Start()
@@ -45,6 +43,8 @@ namespace DynamisBridge
 
             try
             {
+                await _serviceProvider.UseLavaNodeAsync();
+
                 if (Plugin.Config.AutoConnect == true)
                     await _audioModule.AutoJoinAsync();
             }
@@ -88,6 +88,11 @@ namespace DynamisBridge
                     await _audioModule.LeaveAsync();
                 }
             }
+        }
+
+        public async Task PlayAudioFile(string filePath)
+        {
+            await _audioModule.PlayAsync(filePath);
         }
 
         public async Task JoinVoiceChannel()
