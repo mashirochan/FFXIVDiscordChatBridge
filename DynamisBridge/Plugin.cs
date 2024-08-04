@@ -48,15 +48,15 @@ public sealed class Plugin : IDalamudPlugin
 
     public Plugin()
     {
-        if (PluginInterface?.AssemblyLocation?.Directory?.FullName is string pluginDir)
-        {
-            LoadDll(Path.Combine(pluginDir, "runtimes\\win-x64\\native", "opus.dll"));
-            LoadDll(Path.Combine(pluginDir, "runtimes\\win-x64\\native", "libsodium.dll"));
-        }
-        else
-        {
-            Logger.Error("PluginInterface or AssemblyLocation is null.");
-        }
+        //if (PluginInterface?.AssemblyLocation?.Directory?.FullName is string pluginDir)
+        //{
+        //    LoadDll(Path.Combine(pluginDir, "runtimes\\win-x64\\native", "opus.dll"));
+        //    LoadDll(Path.Combine(pluginDir, "runtimes\\win-x64\\native", "libsodium.dll"));
+        //}
+        //else
+        //{
+        //    Logger.Error("PluginInterface or AssemblyLocation is null.");
+        //}
 
         Config = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
 
@@ -88,7 +88,6 @@ public sealed class Plugin : IDalamudPlugin
         Chat.ChatMessage += OnChatMessage;
 
         // Lavalink Setup
-        LavalinkManager = new LavalinkManager();
         LavalinkManager.StartLavalink();
 
         _services = ConfigureServices();
@@ -146,11 +145,11 @@ public sealed class Plugin : IDalamudPlugin
         try
         {
             await _discord.DisposeAsync();
-            Plugin.Logger.Info("Plugin disposed successfully.");
+            Logger.Info("Plugin disposed successfully.");
         }
         catch (Exception ex)
         {
-            Plugin.Logger.Error($"Error during plugin disposal: {ex.Message}");
+            Logger.Error($"Error during plugin disposal: {ex.Message}");
         }
     }
 
@@ -212,14 +211,14 @@ public sealed class Plugin : IDalamudPlugin
     public void ToggleConfigUI() => ConfigWindow.Toggle();
     public void ToggleMainUI() => MainWindow.Toggle();
 
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    private static extern IntPtr LoadLibrary(string lpFileName);
+    //[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    //private static extern IntPtr LoadLibrary(string lpFileName);
 
-    private static void LoadDll(string libraryPath)
-    {
-        if (LoadLibrary(libraryPath) == IntPtr.Zero)
-        {
-            throw new Exception($"Failed to load library: {libraryPath}");
-        }
-    }
+    //private static void LoadDll(string libraryPath)
+    //{
+    //    if (LoadLibrary(libraryPath) == IntPtr.Zero)
+    //    {
+    //        throw new Exception($"Failed to load library: {libraryPath}");
+    //    }
+    //}
 }

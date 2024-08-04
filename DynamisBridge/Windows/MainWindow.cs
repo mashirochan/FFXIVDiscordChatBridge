@@ -13,6 +13,7 @@ using Dalamud.Game.Text;
 using ImGuiNET;
 using System.Threading.Tasks;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace DynamisBridge.Windows;
 
@@ -34,7 +35,7 @@ public class MainWindow : Window, IDisposable
 
     public void Dispose() { }
 
-    public override void Draw()
+    public override async void Draw()
     {
         // can't ref a property, so use a local copy
         var pluginEnabled = Plugin.Config.PluginEnabled;
@@ -98,7 +99,8 @@ public class MainWindow : Window, IDisposable
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - (ImGui.CalcTextSize(FontAwesomeIcon.Stop.ToIconString() + "Disconnect").X + (ImGui.GetStyle().FramePadding.X * 2)));
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Stop, "Disconnect"))
             {
-                Task.Run(_plugin.DiscordService.LeaveVoiceChannel);
+                Plugin.Logger.Info("Leaving voice channel...");
+                await _plugin.DiscordService.LeaveVoiceChannel();
             }
         }
         else if (Plugin.VoiceState == VoiceStates.Disconnected)
@@ -106,7 +108,8 @@ public class MainWindow : Window, IDisposable
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - (ImGui.CalcTextSize(FontAwesomeIcon.Play.ToIconString() + "Connect").X + (ImGui.GetStyle().FramePadding.X * 2)));
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Play, "Connect"))
             {
-                Task.Run(_plugin.DiscordService.JoinVoiceChannel);
+                Plugin.Logger.Info("Joining voice channel...");
+                await _plugin.DiscordService.JoinVoiceChannel();
             }
         }
 

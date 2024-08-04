@@ -38,7 +38,7 @@ namespace DynamisBridge
         public async Task Start()
         {
             var token = Plugin.Config.Token;
-
+            Plugin.Logger.Info("Logging into Discord...");
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
 

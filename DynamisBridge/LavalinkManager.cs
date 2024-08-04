@@ -7,11 +7,16 @@ namespace DynamisBridge
 {
     public class LavalinkManager
     {
-        private Process? lavalinkProcess;
+        private static Process? LavalinkProcess;
 
-        public void StartLavalink()
+        public static void StartLavalink()
         {
-            if (lavalinkProcess != null && !lavalinkProcess.HasExited)
+            var currentDirectory = Environment.CurrentDirectory;
+            var fullPath = Path.Combine(currentDirectory, "Lavalink.jar");
+            Plugin.Logger.Debug($"Path to Lavalink.jar: {fullPath}");
+
+
+            if (LavalinkProcess != null && !LavalinkProcess.HasExited)
             {
                 Plugin.Logger.Debug("Lavalink is already running!");
                 return;
@@ -21,35 +26,42 @@ namespace DynamisBridge
             {
                 FileName = "java",
                 Arguments = "-jar Lavalink.jar",
-                WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), // Set the directory where Lavalink.jar is located
+                WorkingDirectory = currentDirectory, // Set the directory where Lavalink.jar is located
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
 
-            lavalinkProcess = new Process { StartInfo = startInfo };
-            lavalinkProcess.OutputDataReceived += (sender, args) => Console.WriteLine(args.Data);
-            lavalinkProcess.ErrorDataReceived += (sender, args) => Console.WriteLine(args.Data);
-
-            lavalinkProcess.Start();
-            lavalinkProcess.BeginOutputReadLine();
-            lavalinkProcess.BeginErrorReadLine();
-        }
-
-        public void StopLavalink()
-        {
-            if (lavalinkProcess != null && !lavalinkProcess.HasExited)
+            try
             {
-                lavalinkProcess.Kill();
-                lavalinkProcess.Dispose();
-                lavalinkProcess = null;
+                LavalinkProcess = new Process { StartInfo = startInfo };
+                LavalinkProcess.OutputDataReceived += (sender, args) => Console.WriteLine(args.Data);
+                LavalinkProcess.ErrorDataReceived += (sender, args) => Console.WriteLine(args.Data);
+
+                LavalinkProcess.Start();
+                LavalinkProcess.BeginOutputReadLine();
+                LavalinkProcess.BeginErrorReadLine();
+            }
+            catch (Exception ex)
+            {
+                Plugin.Logger.Error($"Error starting Lavalink.jar: {ex.Message}");
             }
         }
 
-        public bool IsLavalinkRunning()
+        public static void StopLavalink()
         {
-            return lavalinkProcess != null && !lavalinkProcess.HasExited;
+            if (LavalinkProcess != null && !LavalinkProcess.HasExited)
+            {
+                LavalinkProcess.Kill();
+                LavalinkProcess.Dispose();
+                LavalinkProcess = null;
+            }
+        }
+
+        public static bool IsLavalinkRunning()
+        {
+            return LavalinkProcess != null && !LavalinkProcess.HasExited;
         }
     }
 }

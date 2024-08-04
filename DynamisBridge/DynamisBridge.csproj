@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="Dalamud.Plugin.Bootstrap.targets" />
   <PropertyGroup>
-    <Version>0.1.0.21</Version>
+    <Version>0.1.0.31</Version>
     <Description>Send FFXIV chat messages to a Discord TTS bot.</Description>
     <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
